@@ -8,19 +8,22 @@ let playState = {
         this.game.add.tween(this.logo).to({ y: 200 }, 700, Phaser.Easing.Linear.In, true);
         this.playBtn = game.add.button(260, 850, 'play', this.tutorial, this);
         this.game.add.tween(this.playBtn).to({ y: 560 }, 700, Phaser.Easing.Linear.In, true);
-
         this.music = game.add.audio('backgroundMusic');
-        this.music.loop = true
+        this.music.loop = true;
         this.music.play();
-
         this.muteBtn = this.game.add.button(30, 820, 'btnSfx', this.toggleMute, this);
         this.muteBtn.fixedToCamera = true;
-        if (!this.game.sound.mute) {
-            this.muteBtn.tint = 16777215;
-        } else {
-            this.muteBtn.tint = 16711680;
-        }
-        this.shadow = ['shadow'];
+                    if (!this.game.sound.mute) {
+                        this.muteBtn.tint = 16777215;
+                    } else {
+                        this.muteBtn.tint = 16711680;
+                    }
+        audioKill = game.add.audio('audioKill');
+        game.physics.startSystem(Phaser.Physics.ARCADE);
+        emitter = game.add.emitter(0, 0, 100);
+        let keyAndFrameArr = ['particle_ex1', 'particle_ex2', 'particle_ex3'];
+        emitter.makeParticles(keyAndFrameArr, keyAndFrameArr);
+        emitter.gravity = 1000;
         this.gemTypes = [
             'redDonut',
             'purpleDonut',
@@ -33,11 +36,7 @@ let playState = {
         this.activeGem2 = null;
         this.canMove = false;
         this.gemSize = this.game.cache.getImage('redDonut').width;
-        this.gemShadow = this.game.cache.getImage ('shadow').width;
         this.gems = this.game.add.group();
-
-
-
         this.gemGrid = [
             [null, null, null, null, null],
             [null, null, null, null, null],
@@ -47,10 +46,7 @@ let playState = {
             [null, null, null, null, null],
             [null, null, null, null, null],
             [null, null, null, null, null],
-
         ];
-
-
     },
     toggleMute: function () {
         if (!this.game.sound.mute) {
@@ -68,15 +64,10 @@ let playState = {
         if (this.activeGem1 && !this.activeGem2) {
             let pointerX = this.game.input.x;
             let pointerY = this.game.input.y;
-
-
-            
             let pointerPosX = Math.floor(pointerX / this.gemSize);
             let pointerPosY = Math.floor(pointerY / this.gemSize);
-
             let difX = (pointerPosX - this.startPosX);
             let difY = (pointerPosY - this.startPosY);
-
             if (pointerPosY < this.gemGrid[0].length && pointerPosX < this.gemGrid.length) {
                 if ((Math.abs(difY) === 1 && difX === 0) || (Math.abs(difX) === 1 && difY === 0)) {
                     this.canMove = false;
@@ -106,18 +97,16 @@ let playState = {
         this.playBtn.destroy();
         this.text.destroy();
         this.shouldStartTimeCount = true;
-
-        this.score = 0
-        this.timeLeft = 10
-
+        this.score = 0;
+        this.timeLeft = 10;
         this.scoreBar = this.game.add.sprite(660, 900, 'scoreBar');
         this.scoreBar.anchor.setTo(0.5, 0.5);
         this.scoreBar.scale.setTo(0.8, 0.8);
 
-        this.scoreString = this.game.add.text(660, 890, this.score.toString(), { font: '60px Fredoka One', fill: 'red' });
+        this.scoreString = this.game.add.text(660, 890, this.score.toString(), { font: '60px Fredoka One', fill: '#ff0044' });
         this.scoreString.anchor.setTo(0.5, 0.5);
 
-        this.timeLeftString = this.game.add.text(450, 890, this.timeLeft.toString(), { font: '40px Fredoka One', fill: 'red' });
+        this.timeLeftString = this.game.add.text(450, 890, this.timeLeft.toString(), { font: '40px Fredoka One', fill: '#ff0044' });
         this.timeLeftString.anchor.setTo(0.5, 0.5);
         this.fillTheGrid();
         this.timeInterval(false);
@@ -205,8 +194,10 @@ let playState = {
         const matches = this.getMatchingGems();
 
         if (matches.length > 0) {
+            audioKill.play();
             this.removeGems(matches, false);
             this.moveGemsDown();
+
             this.fillTheMisingGems();
 
             this.game.time.events.add(500, () => this.activeGemReset());
@@ -218,10 +209,9 @@ let playState = {
                 this.canMove = true;
             });
         }
-
     },
-
     activeGemReset: function () {
+
         this.activeGem1 = null;
         this.activeGem2 = null;
     },
@@ -281,7 +271,6 @@ let playState = {
                 matches.push(gems);
             }
         }
-
         return matches;
     },
 
@@ -301,7 +290,7 @@ let playState = {
                 let gemPos = this.getGemPos(gem);
                 this.gems.remove(gem);
 
-                if (gemPos.i != -1 && gemPos.j != -1) {
+                if (gemPos.i !== -1 && gemPos.j !== -1) {
                     this.gemGrid[gemPos.i][gemPos.j] = null;
                 }
             }
@@ -320,6 +309,7 @@ let playState = {
                 }
             }
         }
+
         return position;
     },
 
@@ -327,10 +317,10 @@ let playState = {
         for (let i = 0; i < this.gemGrid.length; i++) {
             for (let j = this.gemGrid[i].length - 1; j > 0; j--) {
                 if (this.gemGrid[i][j] === null && this.gemGrid[i][j - 1] != null) {
+
                     let x = this.gemGrid[i][j - 1];
                     this.gemGrid[i][j] = x;
                     this.gemGrid[i][j - 1] = null;
-
                     this.game.add.tween(x).to({ y: this.gemSize * j + this.gemSize / 2 }, 250, Phaser.Easing.Linear.In, true);
                     j = this.gemGrid[i].length;
                 }
@@ -348,29 +338,20 @@ let playState = {
                 }
             }
         }
-
     },
     gameOver: function () {
         this.shouldStartTimeCount = false;
         this.canMove = false;
         this.removeGems(this.gemGrid, true);
         this.activeGemReset();
-
         this.scoreString.destroy();
         this.timeLeftString.destroy();
         this.scoreBar.destroy();
-
         this.donutShadow = game.add.image(140, 210, 'donutShadow');
         this.donut = game.add.image(110, 210, 'donut');
-        this.playBtn.alpha = 0;
-        this.timeUp = this.game.add.sprite(170, 260, 'timeUp');
+        this.timeUp = game.add.image(170, 260, 'timeUp');
         this.game.add.tween(this.timeUp).to({ y: 310 }, 700, Phaser.Easing.Linear.In, true);
-        this.playBtn = game.add.button(260, 580, 'play');
+        this.playBtn = game.add.button(260, 580, 'play',this.startGame, this);
         this.game.add.tween(this.playBtn).to({ y: 560 }, 700, Phaser.Easing.Linear.In, true);
-
-        this.playBtn.inputEnabled = true;
-        this.playBtn.events.onInputDown.add(this.startGame, this);
-
-
     },
 };
