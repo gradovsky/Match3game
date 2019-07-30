@@ -19,11 +19,14 @@ let playState = {
                         this.muteBtn.tint = 16711680;
                     }
         audioKill = game.add.audio('audioKill');
-        game.physics.startSystem(Phaser.Physics.ARCADE);
-        emitter = game.add.emitter(0, 0, 100);
-        let keyAndFrameArr = ['particle_ex1', 'particle_ex2', 'particle_ex3'];
-        emitter.makeParticles(keyAndFrameArr, keyAndFrameArr);
-        emitter.gravity = 1000;
+
+        // game.physics.startSystem(Phaser.Physics.ARCADE);
+        // emitter = game.add.emitter(0, 0, 100);
+        // let keyAndFrameArr = ['particle_ex1'];
+        // emitter.makeParticles(keyAndFrameArr);
+        // emitter.gravity = 1000;
+        // emitter.start(true, 500, null, 8);
+
         this.gemTypes = [
             'redDonut',
             'purpleDonut',
@@ -83,7 +86,7 @@ let playState = {
         this.donutShadow.destroy();
         this.logo.destroy();
         this.playBtn.destroy();
-        this.text = game.add.text(game.world.centerX, game.world.centerY, "- HOW TO PLAY -\nYou have \n10 seconds for start.\n Make \na horizontal or vertical \nline to form \nthree or more donuts", { font: "65px Fredoka One", fill: "#ff0044", align: "center" });
+        this.text = game.add.text(game.world.centerX, game.world.centerY, "- HOW TO PLAY -\nYou have \n10 seconds for start.\n Make \na horizontal or vertical \nline to form \nthree or more donuts", { font: "60px Fredoka One", fill: "#ff0044", align: "center" });
         this.text.anchor.setTo(0.5, 0.5);
         this.playBtn = game.add.button(260, 850, 'play', this.startGame, this);
         this.game.add.tween(this.playBtn).to({ y: 770 }, 700, Phaser.Easing.Linear.In, true);
@@ -102,10 +105,8 @@ let playState = {
         this.scoreBar = this.game.add.sprite(660, 900, 'scoreBar');
         this.scoreBar.anchor.setTo(0.5, 0.5);
         this.scoreBar.scale.setTo(0.8, 0.8);
-
         this.scoreString = this.game.add.text(660, 890, this.score.toString(), { font: '60px Fredoka One', fill: '#ff0044' });
         this.scoreString.anchor.setTo(0.5, 0.5);
-
         this.timeLeftString = this.game.add.text(450, 890, this.timeLeft.toString(), { font: '40px Fredoka One', fill: '#ff0044' });
         this.timeLeftString.anchor.setTo(0.5, 0.5);
         this.fillTheGrid();
@@ -120,9 +121,7 @@ let playState = {
                 stop = this.timeInterval(false);
             });
         } else return true;
-
     },
-
     fillTheGrid: function () {
         const length = this.gemGrid.length;
         for (let i = 0; i < length; i++) {
@@ -134,7 +133,6 @@ let playState = {
             this.checkMatching();
         });
     },
-
     addGem: function (i, j) {
         let randomN = Math.floor(Math.random() * (this.gemTypes.length));
         const gemType = this.gemTypes[randomN];
@@ -149,7 +147,6 @@ let playState = {
 
         return gem;
     },
-
     gemDown: function (gem) {
         if (this.canMove) {
             this.activeGem1 = gem;
@@ -157,7 +154,6 @@ let playState = {
             this.startPosY = (gem.y - this.gemSize / 2) / this.gemSize;
         }
     },
-
     swapGems: function () {
         if (this.activeGem1 && this.activeGem2) {
             let gem1Pos = {
@@ -189,17 +185,13 @@ let playState = {
             );
         }
     },
-
     checkMatching: function () {
         const matches = this.getMatchingGems();
-
         if (matches.length > 0) {
-            audioKill.play();
             this.removeGems(matches, false);
             this.moveGemsDown();
-
+            audioKill.play();
             this.fillTheMisingGems();
-
             this.game.time.events.add(500, () => this.activeGemReset());
             this.game.time.events.add(500, () => this.checkMatching());
         } else {
@@ -211,7 +203,6 @@ let playState = {
         }
     },
     activeGemReset: function () {
-
         this.activeGem1 = null;
         this.activeGem2 = null;
     },
@@ -245,7 +236,6 @@ let playState = {
                 matches.push(gems);
             }
         }
-
         for (let j = 0; j < this.gemGrid.length; j++) {
             gems = [];
             for (let i = 0; i < this.gemGrid[j].length; i++) {
@@ -273,10 +263,10 @@ let playState = {
         }
         return matches;
     },
-
     removeGems: function (matches, GameOver) {
         for (let i = 0; i < matches.length; i++) {
             for (let j = 0; j < matches[i].length; j++) {
+
                 let gem = matches[i][j];
 
                 this.score += 10;
@@ -292,12 +282,12 @@ let playState = {
 
                 if (gemPos.i !== -1 && gemPos.j !== -1) {
                     this.gemGrid[gemPos.i][gemPos.j] = null;
+
                 }
             }
         }
         this.scoreString.setText(this.score.toString());
     },
-
     getGemPos: function (gem) {
         let position = { i: -1, j: -1 };
         for (let i = 0; i < this.gemGrid.length; i++) {
@@ -312,7 +302,6 @@ let playState = {
 
         return position;
     },
-
     moveGemsDown: function () {
         for (let i = 0; i < this.gemGrid.length; i++) {
             for (let j = this.gemGrid[i].length - 1; j > 0; j--) {
@@ -327,7 +316,6 @@ let playState = {
             }
         }
     },
-
     fillTheMisingGems: function () {
         let gem;
         for (let i = 0; i < this.gemGrid.length; i++) {
