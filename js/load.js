@@ -16,6 +16,7 @@ preload: function() {
         game.load.image('cyanDonut', 'images/game/gem-04.png');
         game.load.image('yellowDonut', 'images/game/gem-05.png');
         game.load.image('purpleDonut', 'images/game/gem-06.png');
+        game.load.image('shadow', 'images/game/shadow.png');
         game.load.image('scoreBar', 'images/bg-score.png');
         game.load.image('timeUp', 'images/text-timeup.png');
         game.load.image('playBtn', 'images/btn-play.png');
