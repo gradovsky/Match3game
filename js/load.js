@@ -22,14 +22,10 @@ preload: function() {
         game.load.image('particle_ex1', 'images/particles/particle_ex1.png');
         game.load.image('particle_ex2', 'images/particles/particle_ex2.png');
         game.load.image('particle_ex3', 'images/particles/particle_ex3.png');
-
         game.load.audio('backgroundMusic', 'audio/background.mp3');
         game.load.audio('audioKill', 'audio/kill.mp3');
-
-
 },
-
 create: function() {
-    game.state.start('play');
-}
-
+    game.state.start('play')
+},
+};
